@@ -342,32 +342,24 @@ namespace PawnTweaker {
                         FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
                         if (!multiplied.Equals(current)) {
                             pawn.apparelMoney = multiplied;
-                        } else {
-                            pawn.apparelMoney = null;
                         }
                     } else if (selectedMultiplyField == "weaponMoney") {
                         FloatRange current = pawn.WeaponMoney;
                         FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
                         if (!multiplied.Equals(current)) {
                             pawn.weaponMoney = multiplied;
-                        } else {
-                            pawn.weaponMoney = null;
                         }
                     } else if (selectedMultiplyField == "techHediffsMoney") {
                         FloatRange current = pawn.TechHediffsMoney;
                         FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
                         if (!multiplied.Equals(current)) {
                             pawn.techHediffsMoney = multiplied;
-                        } else {
-                            pawn.techHediffsMoney = null;
                         }
                     } else if (selectedMultiplyField == "techHediffsChance") {
                         float current = pawn.TechHediffsChance;
                         float multipliedChance = Mathf.Clamp(current * multiplier, 0f, 1f);
-                        if (Math.Abs(multipliedChance - current) > 0.001f) {
+                        if (Math.Abs(multipliedChance - current) > 0.001f) { // Small epsilon for float comparison
                             pawn.techHediffsChance = multipliedChance;
-                        } else {
-                            pawn.techHediffsChance = null;
                         }
                     }
                 }

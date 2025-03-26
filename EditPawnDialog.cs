@@ -106,80 +106,66 @@ namespace PawnTweaker {
         private void DrawTopButtons(Rect rect) {
             float buttonWidth = 100f;
             float gap = 10f;
-            float totalWidth = 3 * buttonWidth + 2 * gap;
+            float totalWidth = 4 * buttonWidth + 3 * gap; // Adjusted for 4 buttons
             float startX = rect.x + (rect.width - totalWidth) / 2;
 
+            // Save button
             Rect saveRect = new Rect(startX, rect.y, buttonWidth, rect.height);
             if (Widgets.ButtonText(saveRect, "Save")) {
                 if (float.TryParse(apparelMoneyMinStr, out float apparelMin) && float.TryParse(apparelMoneyMaxStr, out float apparelMax)) {
                     FloatRange newApparelMoney = new FloatRange(apparelMin, apparelMax);
                     if (!newApparelMoney.Equals(PawnTweak.ApparelMoney)) {
                         PawnTweak.apparelMoney = newApparelMoney;
-                    } else {
-                        PawnTweak.apparelMoney = null;
                     }
-                } else {
-                    PawnTweak.apparelMoney = null;
                 }
 
                 if (float.TryParse(weaponMoneyMinStr, out float weaponMin) && float.TryParse(weaponMoneyMaxStr, out float weaponMax)) {
                     FloatRange newWeaponMoney = new FloatRange(weaponMin, weaponMax);
                     if (!newWeaponMoney.Equals(PawnTweak.WeaponMoney)) {
                         PawnTweak.weaponMoney = newWeaponMoney;
-                    } else {
-                        PawnTweak.weaponMoney = null;
                     }
-                } else {
-                    PawnTweak.weaponMoney = null;
                 }
 
                 if (float.TryParse(techHediffsMoneyMinStr, out float techMin) && float.TryParse(techHediffsMoneyMaxStr, out float techMax)) {
                     FloatRange newTechMoney = new FloatRange(techMin, techMax);
                     if (!newTechMoney.Equals(PawnTweak.TechHediffsMoney)) {
                         PawnTweak.techHediffsMoney = newTechMoney;
-                    } else {
-                        PawnTweak.techHediffsMoney = null;
                     }
-                } else {
-                    PawnTweak.techHediffsMoney = null;
                 }
 
                 if (float.TryParse(techHediffsChanceStr, out float chance)) {
                     chance = Mathf.Clamp(chance, 0f, 1f);
                     if (Math.Abs(chance - PawnTweak.TechHediffsChance) > 0.001f) {
                         PawnTweak.techHediffsChance = chance;
-                    } else {
-                        PawnTweak.techHediffsChance = null;
                     }
-                } else {
-                    PawnTweak.techHediffsChance = null;
                 }
 
                 var apparelTagsList = selectedApparelTags.ToList();
                 if (!apparelTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.ApparelTags.OrderBy(t => t))) {
                     PawnTweak.apparelTags = apparelTagsList;
-                } else {
-                    PawnTweak.apparelTags = null;
                 }
 
                 var weaponTagsList = selectedWeaponTags.ToList();
                 if (!weaponTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.WeaponTags.OrderBy(t => t))) {
                     PawnTweak.weaponTags = weaponTagsList;
-                } else {
-                    PawnTweak.weaponTags = null;
                 }
 
                 var techHediffsTagsList = selectedTechHediffsTags.ToList();
                 if (!techHediffsTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.TechHediffsTags.OrderBy(t => t))) {
                     PawnTweak.techHediffsTags = techHediffsTagsList;
-                } else {
-                    PawnTweak.techHediffsTags = null;
                 }
 
                 Close();
             }
 
-            Rect copyAllRect = new Rect(startX + buttonWidth + gap, rect.y, buttonWidth, rect.height);
+            // Cancel button (new)
+            Rect cancelRect = new Rect(startX + buttonWidth + gap, rect.y, buttonWidth, rect.height);
+            if (Widgets.ButtonText(cancelRect, "Cancel")) {
+                Close();
+            }
+
+            // Copy All button
+            Rect copyAllRect = new Rect(startX + 2 * (buttonWidth + gap), rect.y, buttonWidth, rect.height);
             if (Widgets.ButtonText(copyAllRect, "Copy All")) {
                 if (float.TryParse(apparelMoneyMinStr, out float apparelMin) && float.TryParse(apparelMoneyMaxStr, out float apparelMax)) {
                     CopiedPawnValues.CopiedApparelMoney = new FloatRange(apparelMin, apparelMax);
@@ -202,7 +188,8 @@ namespace PawnTweaker {
                 CopiedPawnValues.CopiedTechHediffsTags = selectedTechHediffsTags.ToList();
             }
 
-            Rect pasteAllRect = new Rect(startX + 2 * (buttonWidth + gap), rect.y, buttonWidth, rect.height);
+            // Paste All button
+            Rect pasteAllRect = new Rect(startX + 3 * (buttonWidth + gap), rect.y, buttonWidth, rect.height);
             if (Widgets.ButtonText(pasteAllRect, "Paste All")) {
                 if (CopiedPawnValues.CopiedApparelMoney.HasValue) {
                     apparelMoneyMinStr = CopiedPawnValues.CopiedApparelMoney.Value.min.ToString("F0");
