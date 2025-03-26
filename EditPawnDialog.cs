@@ -113,30 +113,68 @@ namespace PawnTweaker {
             if (Widgets.ButtonText(saveRect, "Save")) {
                 if (float.TryParse(apparelMoneyMinStr, out float apparelMin) && float.TryParse(apparelMoneyMaxStr, out float apparelMax)) {
                     FloatRange newApparelMoney = new FloatRange(apparelMin, apparelMax);
-                    if (newApparelMoney != PawnTweak.ApparelMoney) PawnTweak.apparelMoney = newApparelMoney;
-                } else PawnTweak.apparelMoney = null;
+                    if (!newApparelMoney.Equals(PawnTweak.ApparelMoney)) {
+                        PawnTweak.apparelMoney = newApparelMoney;
+                    } else {
+                        PawnTweak.apparelMoney = null;
+                    }
+                } else {
+                    PawnTweak.apparelMoney = null;
+                }
 
                 if (float.TryParse(weaponMoneyMinStr, out float weaponMin) && float.TryParse(weaponMoneyMaxStr, out float weaponMax)) {
                     FloatRange newWeaponMoney = new FloatRange(weaponMin, weaponMax);
-                    if (newWeaponMoney != PawnTweak.WeaponMoney) PawnTweak.weaponMoney = newWeaponMoney;
-                } else PawnTweak.weaponMoney = null;
+                    if (!newWeaponMoney.Equals(PawnTweak.WeaponMoney)) {
+                        PawnTweak.weaponMoney = newWeaponMoney;
+                    } else {
+                        PawnTweak.weaponMoney = null;
+                    }
+                } else {
+                    PawnTweak.weaponMoney = null;
+                }
 
                 if (float.TryParse(techHediffsMoneyMinStr, out float techMin) && float.TryParse(techHediffsMoneyMaxStr, out float techMax)) {
                     FloatRange newTechMoney = new FloatRange(techMin, techMax);
-                    if (newTechMoney != PawnTweak.TechHediffsMoney) PawnTweak.techHediffsMoney = newTechMoney;
-                } else PawnTweak.techHediffsMoney = null;
+                    if (!newTechMoney.Equals(PawnTweak.TechHediffsMoney)) {
+                        PawnTweak.techHediffsMoney = newTechMoney;
+                    } else {
+                        PawnTweak.techHediffsMoney = null;
+                    }
+                } else {
+                    PawnTweak.techHediffsMoney = null;
+                }
 
                 if (float.TryParse(techHediffsChanceStr, out float chance)) {
                     chance = Mathf.Clamp(chance, 0f, 1f);
-                    if (chance != PawnTweak.TechHediffsChance) PawnTweak.techHediffsChance = chance;
-                } else PawnTweak.techHediffsChance = null;
+                    if (Math.Abs(chance - PawnTweak.TechHediffsChance) > 0.001f) {
+                        PawnTweak.techHediffsChance = chance;
+                    } else {
+                        PawnTweak.techHediffsChance = null;
+                    }
+                } else {
+                    PawnTweak.techHediffsChance = null;
+                }
 
                 var apparelTagsList = selectedApparelTags.ToList();
-                if (!apparelTagsList.SequenceEqual(PawnTweak.ApparelTags)) PawnTweak.apparelTags = apparelTagsList;
+                if (!apparelTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.ApparelTags.OrderBy(t => t))) {
+                    PawnTweak.apparelTags = apparelTagsList;
+                } else {
+                    PawnTweak.apparelTags = null;
+                }
+
                 var weaponTagsList = selectedWeaponTags.ToList();
-                if (!weaponTagsList.SequenceEqual(PawnTweak.WeaponTags)) PawnTweak.weaponTags = weaponTagsList;
+                if (!weaponTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.WeaponTags.OrderBy(t => t))) {
+                    PawnTweak.weaponTags = weaponTagsList;
+                } else {
+                    PawnTweak.weaponTags = null;
+                }
+
                 var techHediffsTagsList = selectedTechHediffsTags.ToList();
-                if (!techHediffsTagsList.SequenceEqual(PawnTweak.TechHediffsTags)) PawnTweak.techHediffsTags = techHediffsTagsList;
+                if (!techHediffsTagsList.OrderBy(t => t).SequenceEqual(PawnTweak.TechHediffsTags.OrderBy(t => t))) {
+                    PawnTweak.techHediffsTags = techHediffsTagsList;
+                } else {
+                    PawnTweak.techHediffsTags = null;
+                }
 
                 Close();
             }

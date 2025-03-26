@@ -49,16 +49,19 @@ namespace PawnTweaker {
                 .Where(def => def.isTechHediff)
                 .SelectMany(def => def.techHediffsTags ?? Enumerable.Empty<string>())
                 .Distinct()
+                .OrderBy(tag => tag)
                 .ToList();
             AllApparelTags = DefDatabase<ThingDef>.AllDefs
                 .Where(def => def.apparel != null && def.apparel.tags != null)
                 .SelectMany(def => def.apparel.tags)
                 .Distinct()
+                .OrderBy(tag => tag)
                 .ToList();
             AllWeaponTags = DefDatabase<ThingDef>.AllDefs
                 .Where(def => def.weaponTags != null)
                 .SelectMany(def => def.weaponTags)
                 .Distinct()
+                .OrderBy(tag => tag)
                 .ToList();
             LoadChanges();
             ApplyAllChanges();
@@ -72,40 +75,63 @@ namespace PawnTweaker {
         public void LoadChanges() {
             if (string.IsNullOrEmpty(FilePath) || !File.Exists(FilePath)) return;
             try {
+                foreach (var tweak in Data) {
+                    tweak.SetDefault();
+                }
+
                 List<string> lines = File.ReadAllLines(FilePath).ToList();
                 foreach (var line in lines) {
                     if (string.IsNullOrWhiteSpace(line)) continue;
                     string[] parts = line.Split(',');
                     if (parts.Length < 1) continue;
+
                     var tweak = Data.FirstOrDefault(x => x.PawnKindDef.defName == parts[0]);
                     if (tweak == null) continue;
+
+                    // Apparel Money (column 1)
                     if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1])) {
                         string[] rangeParts = parts[1].Split('~');
-                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max))
+                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max)) {
                             tweak.apparelMoney = new FloatRange(min, max);
+                        }
                     }
+
+                    // Weapon Money (column 2)
                     if (parts.Length > 2 && !string.IsNullOrEmpty(parts[2])) {
                         string[] rangeParts = parts[2].Split('~');
-                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max))
+                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max)) {
                             tweak.weaponMoney = new FloatRange(min, max);
+                        }
                     }
+
+                    // Tech Hediffs Money (column 3)
                     if (parts.Length > 3 && !string.IsNullOrEmpty(parts[3])) {
                         string[] rangeParts = parts[3].Split('~');
-                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max))
+                        if (rangeParts.Length == 2 && float.TryParse(rangeParts[0], out float min) && float.TryParse(rangeParts[1], out float max)) {
                             tweak.techHediffsMoney = new FloatRange(min, max);
+                        }
                     }
+
+                    // Tech Hediffs Chance (column 4)
                     if (parts.Length > 4 && !string.IsNullOrEmpty(parts[4])) {
-                        if (float.TryParse(parts[4], out float chance))
+                        if (float.TryParse(parts[4], out float chance)) {
                             tweak.techHediffsChance = chance;
+                        }
                     }
+
+                    // Tech Hediffs Tags (column 5)
                     if (parts.Length > 5 && !string.IsNullOrEmpty(parts[5])) {
                         List<string> tags = parts[5].Split(';').Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)).ToList();
                         if (tags.Count > 0) tweak.techHediffsTags = tags;
                     }
+
+                    // Apparel Tags (column 6)
                     if (parts.Length > 6 && !string.IsNullOrEmpty(parts[6])) {
                         List<string> tags = parts[6].Split(';').Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)).ToList();
                         if (tags.Count > 0) tweak.apparelTags = tags;
                     }
+
+                    // Weapon Tags (column 7)
                     if (parts.Length > 7 && !string.IsNullOrEmpty(parts[7])) {
                         List<string> tags = parts[7].Split(';').Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)).ToList();
                         if (tags.Count > 0) tweak.weaponTags = tags;
@@ -312,22 +338,43 @@ namespace PawnTweaker {
                 }
                 foreach (PawnTweakData pawn in selectedPawnKinds) {
                     if (selectedMultiplyField == "apparelMoney") {
-                        FloatRange multiplied = new FloatRange(pawn.ApparelMoney.min * multiplier, pawn.ApparelMoney.max * multiplier);
-                        pawn.apparelMoney = multiplied;
+                        FloatRange current = pawn.ApparelMoney;
+                        FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
+                        if (!multiplied.Equals(current)) {
+                            pawn.apparelMoney = multiplied;
+                        } else {
+                            pawn.apparelMoney = null;
+                        }
                     } else if (selectedMultiplyField == "weaponMoney") {
-                        FloatRange multiplied = new FloatRange(pawn.WeaponMoney.min * multiplier, pawn.WeaponMoney.max * multiplier);
-                        pawn.weaponMoney = multiplied;
+                        FloatRange current = pawn.WeaponMoney;
+                        FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
+                        if (!multiplied.Equals(current)) {
+                            pawn.weaponMoney = multiplied;
+                        } else {
+                            pawn.weaponMoney = null;
+                        }
                     } else if (selectedMultiplyField == "techHediffsMoney") {
-                        FloatRange multiplied = new FloatRange(pawn.TechHediffsMoney.min * multiplier, pawn.TechHediffsMoney.max * multiplier);
-                        pawn.techHediffsMoney = multiplied;
+                        FloatRange current = pawn.TechHediffsMoney;
+                        FloatRange multiplied = new FloatRange(current.min * multiplier, current.max * multiplier);
+                        if (!multiplied.Equals(current)) {
+                            pawn.techHediffsMoney = multiplied;
+                        } else {
+                            pawn.techHediffsMoney = null;
+                        }
                     } else if (selectedMultiplyField == "techHediffsChance") {
-                        float multipliedChance = Mathf.Clamp(pawn.TechHediffsChance * multiplier, 0f, 1f);
-                        pawn.techHediffsChance = multipliedChance;
+                        float current = pawn.TechHediffsChance;
+                        float multipliedChance = Mathf.Clamp(current * multiplier, 0f, 1f);
+                        if (Math.Abs(multipliedChance - current) > 0.001f) {
+                            pawn.techHediffsChance = multipliedChance;
+                        } else {
+                            pawn.techHediffsChance = null;
+                        }
                     }
                 }
                 UpdateFilteredPawns();
             }
             TooltipHandler.TipRegion(applyRect, "Apply the multiplier to the selected pawns’ chosen setting.");
+
             x += 125f;
 
             Rect separator2Rect = new Rect(x, actionRow.y, 2f, 30f);
