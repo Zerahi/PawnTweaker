@@ -55,7 +55,7 @@ namespace PawnTweaker {
 
         public override void DoWindowContents(Rect inRect) {
             float padding = 5f;
-            float topPadding = 15f; // Adjusted top gap as requested
+            float topPadding = 15f;
             float horizontalSpacing = 10f;
             float verticalSpacing = 10f;
             float buttonHeight = 30f;
@@ -63,10 +63,25 @@ namespace PawnTweaker {
 
             float currentY = inRect.y;
 
-            // Top buttons (unchanged)
-            Rect buttonRect = new Rect(inRect.x, currentY, inRect.width, buttonHeight);
+            // Top row: Pawn name, buttons, and Clear Copy
+            Rect topRowRect = new Rect(inRect.x, currentY, inRect.width, buttonHeight);
+
+            // Pawn name on the far left
+            Rect pawnNameRect = new Rect(topRowRect.x, topRowRect.y, 220f, buttonHeight);
+            Widgets.Label(pawnNameRect, PawnTweak.PawnKindDef.defName);
+
+            // Centered buttons (Save, Cancel, Copy All, Paste All)
+            Rect buttonRect = new Rect(topRowRect.x, topRowRect.y, topRowRect.width, buttonHeight);
             DrawTopButtons(buttonRect);
-            currentY += buttonHeight + verticalSpacing + topPadding; // Only top gap adjusted
+
+            // Clear Copy button on the far right
+            float clearCopyWidth = Text.CalcSize("Clear Copy").x + 10f;
+            Rect clearCopyRect = new Rect(topRowRect.xMax - clearCopyWidth - 40f, topRowRect.y, clearCopyWidth, buttonHeight);
+            if (Widgets.ButtonText(clearCopyRect, "Clear Copy")) {
+                CopiedPawnValues.Clear();
+            }
+
+            currentY += buttonHeight + verticalSpacing + topPadding;
 
             // 2x2 Control boxes
             float controlBoxWidth = (inRect.width - horizontalSpacing) / 2;

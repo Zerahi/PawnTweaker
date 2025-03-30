@@ -432,7 +432,7 @@ namespace PawnTweaker {
             if (allMatch)
                 Messages.Message("All selected pawns’ in-game values match the config window values.", MessageTypeDefOf.PositiveEvent);
             else
-                Messages.Message("Mismatch detected for the following pawns:" + mismatchDetails + "\n\nChanges apply to newly spawned pawns.", MessageTypeDefOf.NegativeEvent);
+                Messages.Message("Mismatch detected for the following pawns:" + mismatchDetails, MessageTypeDefOf.NegativeEvent);
         }
 
         private void ExportChanges() {
