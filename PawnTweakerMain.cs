@@ -37,7 +37,7 @@ namespace PawnTweaker {
         public static string FilePath => Path.Combine(GenFilePaths.ConfigFolderPath, "PawnTweaks.csv");
 
         public PawnTweaker(ModContentPack content) : base(content) {
-            LongEventHandler.QueueLongEvent(InitializePawnData, "Initializing Pawn Data", false, null);
+            LongEventHandler.QueueLongEvent(InitializePawnData, "Initializing Pawn Data", false, null, false);
         }
 
         private void InitializePawnData() {
@@ -159,8 +159,8 @@ namespace PawnTweaker {
             if (Widgets.ButtonText(factionRect, selectedFaction != null ? selectedFaction.label : (showNoFaction ? "No Faction" : "All Factions"))) {
                 List<FactionDef> factionDefsWithPawns = new List<FactionDef>();
                 foreach (PawnKindDef p in DefDatabase<PawnKindDef>.AllDefs) {
-                    if (p.defaultFactionType != null && !factionDefsWithPawns.Contains(p.defaultFactionType))
-                        factionDefsWithPawns.Add(p.defaultFactionType);
+                    if (p.defaultFactionDef != null && !factionDefsWithPawns.Contains(p.defaultFactionDef))
+                        factionDefsWithPawns.Add(p.defaultFactionDef);
                 }
                 factionDefsWithPawns.Sort((a, b) => a.label.CompareTo(b.label));
                 List<FloatMenuOption> options = new List<FloatMenuOption>();
@@ -397,9 +397,9 @@ namespace PawnTweaker {
             foreach (PawnTweakData p in Data) {
                 bool factionMatch;
                 if (showNoFaction) {
-                    factionMatch = p.PawnKindDef.defaultFactionType == null;
+                    factionMatch = p.PawnKindDef.defaultFactionDef == null;
                 } else if (selectedFaction != null) {
-                    factionMatch = p.PawnKindDef.defaultFactionType == selectedFaction;
+                    factionMatch = p.PawnKindDef.defaultFactionDef == selectedFaction;
                 } else {
                     factionMatch = true; // All factions
                 }
